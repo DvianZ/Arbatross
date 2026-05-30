@@ -102,10 +102,18 @@ The styles are managed globally inside `src/app/globals.css`. The design uses co
 
 ### Fixed 2:1.5 Aspect Ratio Map
 To ensure that the 2D ground track map is never squished, the canvas calculates its size based on a fixed 2:1.5 ratio:
-$$\text{Ratio} = \frac{W}{H} = \frac{2}{1.5} \approx 1.33$$
+
+```
+Ratio = W / H = 2 / 1.5 ≈ 1.33
+```
+
 If the container size differs, the drawing automatically scales and offsets the render output within the viewport (letterboxing).
 
 ### Camera Follow Mechanics
-When focusing on the satellite, we calculate the satellite position delta between consecutive animation frames ($\vec{p}_{n} - \vec{p}_{n-1}$) and translate the camera's position by that exact displacement. This keeps the camera's relative coordinates locked to the satellite's motion, while letting OrbitControls spin and zoom freely:
-$$\vec{C}_{n} = \vec{C}_{n-1} + (\vec{S}_{n} - \vec{S}_{n-1})$$
-Where $\vec{C}$ is the Camera position, and $\vec{S}$ is the Satellite position.
+When focusing on the satellite, we calculate the satellite position delta between consecutive animation frames `(p[n] − p[n-1])` and translate the camera's position by that exact displacement. This keeps the camera's relative coordinates locked to the satellite's motion, while letting OrbitControls spin and zoom freely:
+
+```
+C[n] = C[n-1] + (S[n] − S[n-1])
+```
+
+Where **C** is the Camera position vector, and **S** is the Satellite position vector.
