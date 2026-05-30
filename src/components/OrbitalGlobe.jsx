@@ -94,7 +94,6 @@ function Earth({ currentPoint, simulatedTime }) {
 /* ─── Satellite with orbit trail ─── */
 function Satellite({ orbitData, currentIndex, satPosRef, onToggleFocus }) {
   const satelliteRef = useRef();
-  const trailRef = useRef();
   const glowRef = useRef();
 
   // Load the downloaded satellite 3D model
@@ -141,7 +140,6 @@ function Satellite({ orbitData, currentIndex, satPosRef, onToggleFocus }) {
     return latLonToPos(d.lat, d.lon);
   }, [orbitData, currentIndex, latLonToPos]);
 
-  const labelHtmlRef = useRef();
   const currentPosRef = useRef(new THREE.Vector3(0, 2.15, 0));
 
   // Smoothly interpolate position using frame rate
@@ -181,7 +179,7 @@ function Satellite({ orbitData, currentIndex, satPosRef, onToggleFocus }) {
     <group>
       {/* Orbit trail */}
       {trailGeometry && (
-        <mesh ref={trailRef} geometry={trailGeometry}>
+        <mesh geometry={trailGeometry}>
           <meshBasicMaterial
             color="#00FFD0"
             transparent
