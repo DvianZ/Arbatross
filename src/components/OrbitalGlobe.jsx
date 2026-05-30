@@ -237,7 +237,6 @@ function Satellite({ orbitData, currentIndex, satPosRef, onToggleFocus }) {
 
 /* ─── Ground Track Line ─── */
 function GroundTrack({ orbitData }) {
-  const lineRef = useRef();
 
   const geometry = useMemo(() => {
     if (!orbitData || orbitData.length < 2) return null;
@@ -265,7 +264,7 @@ function GroundTrack({ orbitData }) {
   if (!geometry) return null;
 
   return (
-    <line ref={lineRef} geometry={geometry}>
+    <line geometry={geometry}>
       <lineBasicMaterial color="#4A9EFF" transparent opacity={0.3} />
     </line>
   );
