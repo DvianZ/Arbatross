@@ -130,9 +130,6 @@ export default function Home() {
     return new Date(baseTime + elapsedMs).toISOString();
   }, [orbitData, currentIndex, loopCount]);
 
-  // Standard ISS TLE Elements from NORAD
-  const TLE_LINE1 = '1 25544U 98067A   26150.48512140  .00015948  00000-0  28253-3 0  9997';
-  const TLE_LINE2 = '2 25544  51.6418 139.5432 0005424  27.5834 152.4143 15.49540777139540';
 
   return (
     <>
