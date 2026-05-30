@@ -69,15 +69,6 @@ function Sparkline({ data, color = '#4A9EFF', height = 28 }) {
   );
 }
 
-const STATUS_COLORS = {
-  nominal: '#00E676',
-  warning: '#FFB74D',
-  critical: '#FF5252',
-  standby: '#78909C',
-  verified: '#00FFD0',
-  cold: '#78909C',
-};
-
 const METRIC_COLORS = {
   solarPower: '#FFB74D',
   batteryLevel: '#00E676',

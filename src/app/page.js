@@ -71,9 +71,8 @@ export default function Home() {
 
   // Generate a mathematically perfect closed 3D circular orbit around the Earth's center
   // with standard ISS inclination of 51.6 degrees
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const orbitData = useMemo(() => {
-    // Reference launchDate to trigger orbit dataset initialization on user settings overrides
-    const _ = launchDate;
     const pointsCount = 100;
     const generatedData = [];
     const nowTime = new Date();

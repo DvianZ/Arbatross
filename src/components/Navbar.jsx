@@ -20,24 +20,6 @@ export default function Navbar() {
     return () => clearInterval(id);
   }, []);
 
-  // Adjust pre-launch phase check using dynamic launchDate
-  const getDynamicMissionPhase = () => {
-    const ts = new Date().getTime();
-    const launchTs = new Date(launchDate).getTime();
-    if (ts < launchTs) {
-      return { label: 'PRE-LAUNCH', color: '#4A9EFF' };
-    } else if (ts >= launchTs && ts < launchTs + 15 * 60 * 1000) {
-      return { label: 'LAUNCH', color: '#FF5252' };
-    } else if (ts >= launchTs + 15 * 60 * 1000 && ts < launchTs + 90 * 60 * 1000) {
-      return { label: 'ORBIT INSERTION', color: '#FFB74D' };
-    } else if (ts >= launchTs + 90 * 60 * 1000 && ts < new Date('2027-01-15T00:00:00Z').getTime()) {
-      return { label: 'ORBITAL OPERATIONS', color: '#00E676' };
-    } else {
-      return { label: 'DECOMMISSION', color: '#B7C1DD' };
-    }
-  };
-
-  const phase = getDynamicMissionPhase();
 
   const handleSave = (e) => {
     e.preventDefault();

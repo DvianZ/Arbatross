@@ -52,7 +52,6 @@ export default function MissionCountdown() {
   if (!countdown) return null;
 
   // Ring progress: percentage of time elapsed in current day cycle
-  const totalSeconds = countdown.days * 86400 + countdown.hours * 3600 + countdown.minutes * 60 + countdown.seconds;
   const dayProgress = 1 - ((countdown.hours * 3600 + countdown.minutes * 60 + countdown.seconds) / 86400);
   const circumference = 2 * Math.PI * 90;
   const dashOffset = circumference * (1 - dayProgress);
