@@ -29,10 +29,10 @@ export default function OrbitalMap2D({ orbitData = [], currentIndex = 0 }) {
     canvas.height = rect.height * dpr;
     ctx.scale(dpr, dpr);
 
-    // Calculate maximum 2:1.5 dimensions that fit in the container
+    // Calculate maximum 4:3 dimensions that fit in the container
     let W = rect.width;
     let H = rect.height;
-    const ratio = 2 / 1.5;
+    const ratio = 4 / 3;
     if (W / H > ratio) {
       W = H * ratio;
     } else {

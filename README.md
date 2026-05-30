@@ -9,7 +9,7 @@ Developed as a modern web application, the dashboard features a dark, high-contr
 ## 🚀 Key Features
 
 *   **3D Orbital Globe**: An interactive 3D planet Earth displaying the satellite's orbital plane (51.6° inclination). Clicking on the satellite triggers a smooth zoom-in cinematic focus mode that locks onto and follows the satellite's position while preserving the user's freedom to rotate and zoom.
-*   **2D Ground Track Map**: A centered 2:1.5 letterboxed equirectangular map utilizing real Earth textures with responsive scaling, showing past and future satellite ground tracks.
+*   **2D Ground Track Map**: A centered 4:3 letterboxed equirectangular map utilizing real Earth textures with responsive scaling, showing past and future satellite ground tracks.
 *   **Monotonic Clock & Simulation**: Real-time simulation running at 1 step per second (representing 1 minute of orbital time) with simulated time and clocks progressing continuously forward, avoiding any loops or snaps.
 *   **Telemetry Monitor**: Live-updated readouts tracking crucial telemetry metrics like CPU temperature, battery power, solar cell load, altitude, and velocity.
 *   **Edge AI Integrity Verification**: Real-time logging of cryptographic validation hashes generated on-board to prove the integrity of the satellite's edge computing payloads.
@@ -100,11 +100,11 @@ The styles are managed globally inside `src/app/globals.css`. The design uses co
 
 ## ⚙️ Camera Focus & Aspect Ratio Specifications
 
-### Fixed 2:1.5 Aspect Ratio Map
-To ensure that the 2D ground track map is never squished, the canvas calculates its size based on a fixed 2:1.5 ratio:
+### Fixed 4:3 Aspect Ratio Map
+To ensure that the 2D ground track map is never squished, the canvas calculates its size based on a fixed 4:3 ratio:
 
 ```
-Ratio = W / H = 2 / 1.5 ≈ 1.33
+Ratio = W / H = 4 / 3 ≈ 1.33
 ```
 
 If the container size differs, the drawing automatically scales and offsets the render output within the viewport (letterboxing).
