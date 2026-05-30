@@ -38,8 +38,6 @@ const OrbitalGlobe = dynamic(() => import('../components/OrbitalGlobe'), {
   ),
 });
 
-import * as satellite from 'satellite.js';
-
 export default function Home() {
   const { activeView, setActiveView, launchDate } = useMission();
   const [currentIndex, setCurrentIndex] = useState(0);

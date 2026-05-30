@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef, useMemo, useCallback, Suspense } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { useState, useRef, useMemo, useCallback, Suspense } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Stars, Html, useTexture, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import { MISSION } from '../lib/missionConfig';

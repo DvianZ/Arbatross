@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MISSION, getMissionPhase } from '../lib/missionConfig';
+import { MISSION } from '../lib/missionConfig';
 import { useMission } from '../context/MissionContext';
 
 export default function Navbar() {
