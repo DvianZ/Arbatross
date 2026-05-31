@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useMemo, useCallback, Suspense } from 'react';
+import { useState, useRef, useMemo, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Stars, Html, useTexture, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
@@ -17,47 +17,27 @@ if (typeof window !== 'undefined') {
   };
 }
 
-/* ─── Earth Sphere ─── */
-function Earth({ currentPoint, simulatedTime }) {
-  const meshRef = useRef();
+/* ─── Coordinate Helper ─── */
+// Convert lat/lon to 3D position (aligned to Three.js coordinate system and page.js)
+function latLonToPos(lat, lon, radius = 2.15) {
+  const phi = (90 - lat) * (Math.PI / 180);
+  const theta = lon * (Math.PI / 180);
+  return new THREE.Vector3(
+    radius * Math.sin(phi) * Math.cos(theta),
+    radius * Math.cos(phi),
+    radius * Math.sin(phi) * Math.sin(theta)
+  );
+}
 
+/* ─── Earth Sphere ─── */
+function Earth() {
   // Load generated map texture
   const earthTexture = useTexture('/textures/earth_day.png');
-
-  // Compute rotation angle based on the current time's Greenwich Mean Sidereal Time (GMST)
-  const targetRotationY = useMemo(() => {
-    const timeString = simulatedTime || (currentPoint ? currentPoint.t : null);
-    if (!timeString) return -Math.PI / 2;
-    const dateObj = new Date(timeString);
-    const J2000 = new Date('2000-01-01T12:00:00Z');
-    const daysSinceJ2000 = (dateObj.getTime() - J2000.getTime()) / 86400000;
-
-    // GMST in hours
-    const GMST = (18.697374558 + 24.06570982441908 * daysSinceJ2000) % 24;
-    // Convert hours to radians (24 hours = 2PI radians)
-    // Three.js rotates counter-clockwise. Offset by -PI/2 to align 0 longitude.
-    const rad = (GMST * 15 * Math.PI) / 180;
-    return -rad - Math.PI / 2;
-  }, [currentPoint, simulatedTime]);
-
-  // Smoothly interpolate rotation to prevent sudden jumps
-  useFrame(() => {
-    if (meshRef.current) {
-      // Lerp logic: current + (target - current) * factor
-      const current = meshRef.current.rotation.y;
-
-      // Handle modular wrapping differences to prevent complete reverse spins
-      let diff = targetRotationY - current;
-      diff = Math.atan2(Math.sin(diff), Math.cos(diff));
-
-      meshRef.current.rotation.y += diff * 0.08;
-    }
-  });
 
   return (
     <group>
       {/* Earth */}
-      <mesh ref={meshRef}>
+      <mesh>
         <sphereGeometry args={[2, 64, 64]} />
         <meshStandardMaterial
           map={earthTexture}
@@ -102,17 +82,6 @@ function Satellite({ orbitData, currentIndex, satPosRef, onToggleFocus }) {
   // Clone scene so multiple instances don't conflict
   const satModel = useMemo(() => scene.clone(), [scene]);
 
-  // Convert lat/lon to 3D position
-  const latLonToPos = useCallback((lat, lon, radius = 2.15) => {
-    const phi = (90 - lat) * (Math.PI / 180);
-    const theta = (lon + 180) * (Math.PI / 180);
-    return new THREE.Vector3(
-      -radius * Math.sin(phi) * Math.cos(theta),
-      radius * Math.cos(phi),
-      radius * Math.sin(phi) * Math.sin(theta)
-    );
-  }, []);
-
   // Create orbit trail geometry
   const trailGeometry = useMemo(() => {
     if (!orbitData || orbitData.length < 2) return null;
@@ -131,14 +100,14 @@ function Satellite({ orbitData, currentIndex, satPosRef, onToggleFocus }) {
     if (points.length < 2) return null;
     const curve = new THREE.CatmullRomCurve3(points, true);
     return new THREE.TubeGeometry(curve, points.length * 4, 0.008, 8, false);
-  }, [orbitData, currentIndex, latLonToPos]);
+  }, [orbitData, currentIndex]);
 
   // Current target satellite position
   const targetSatPos = useMemo(() => {
     if (!orbitData || !orbitData[currentIndex]) return new THREE.Vector3(0, 2.15, 0);
     const d = orbitData[currentIndex];
     return latLonToPos(d.lat, d.lon);
-  }, [orbitData, currentIndex, latLonToPos]);
+  }, [orbitData, currentIndex]);
 
   const currentPosRef = useRef(new THREE.Vector3(0, 2.15, 0));
 
@@ -149,13 +118,13 @@ function Satellite({ orbitData, currentIndex, satPosRef, onToggleFocus }) {
     // Lerp our persistent coordinates
     currentPosRef.current.lerp(targetSatPos, 0.08);
 
-    // Save position to shared ref for camera tracking
-    if (satPosRef && satPosRef.current) {
-      satPosRef.current.copy(currentPosRef.current);
-    }
-
     if (satelliteRef.current) {
       satelliteRef.current.position.copy(currentPosRef.current);
+
+      // Save global position to shared ref for camera tracking
+      if (satPosRef && satPosRef.current) {
+        satelliteRef.current.getWorldPosition(satPosRef.current);
+      }
 
       // Compute heading direction (tangent vector of movement)
       const dir = new THREE.Vector3().subVectors(targetSatPos, currentPosRef.current).normalize();
@@ -206,7 +175,7 @@ function Satellite({ orbitData, currentIndex, satPosRef, onToggleFocus }) {
       >
         <primitive
           object={satModel}
-          scale={0.0008} // Reduced scale for a more proportional appearance
+          scale={0.0008}
         />
       </group>
 
@@ -243,14 +212,7 @@ function GroundTrack({ orbitData }) {
 
     // Map raw data coords to 3D positions
     const points = orbitData.map((d) => {
-      const phi = (90 - d.lat) * (Math.PI / 180);
-      const theta = (d.lon + 180) * (Math.PI / 180);
-      const r = 2.01;
-      return new THREE.Vector3(
-        -r * Math.sin(phi) * Math.cos(theta),
-        r * Math.cos(phi),
-        r * Math.sin(phi) * Math.sin(theta)
-      );
+      return latLonToPos(d.lat, d.lon, 2.01);
     });
 
     // Create a smooth closed loop spline curve interpolation across all points
@@ -283,8 +245,33 @@ function Scene({
   const satPosRef = useRef(new THREE.Vector3(0, 2.15, 0));
   const lastSatPos = useRef(new THREE.Vector3(0, 2.15, 0));
   const wasFocusedRef = useRef(false);
+  const rotatingGroupRef = useRef();
+
+  // Compute rotation angle based on the current time's Greenwich Mean Sidereal Time (GMST)
+  const targetRotationY = useMemo(() => {
+    const timeString = simulatedTime || (currentPoint ? currentPoint.t : null);
+    if (!timeString) return -Math.PI / 2;
+    const dateObj = new Date(timeString);
+    const J2000 = new Date('2000-01-01T12:00:00Z');
+    const daysSinceJ2000 = (dateObj.getTime() - J2000.getTime()) / 86400000;
+
+    // GMST in hours
+    const GMST = (18.697374558 + 24.06570982441908 * daysSinceJ2000) % 24;
+    // Convert hours to radians (24 hours = 2PI radians)
+    // Three.js rotates counter-clockwise. Offset by -PI/2 to align 0 longitude.
+    const rad = (GMST * 15 * Math.PI) / 180;
+    return -rad - Math.PI / 2;
+  }, [currentPoint, simulatedTime]);
 
   useFrame((state) => {
+    // Interpolate parent group Y-rotation
+    if (rotatingGroupRef.current) {
+      const current = rotatingGroupRef.current.rotation.y;
+      let diff = targetRotationY - current;
+      diff = Math.atan2(Math.sin(diff), Math.cos(diff));
+      rotatingGroupRef.current.rotation.y += diff * 0.08;
+    }
+
     if (controlsRef.current) {
       if (isFocusedOnSatellite) {
         // Calculate the satellite's translation delta this frame
@@ -336,17 +323,17 @@ function Scene({
 
       <Stars radius={100} depth={50} count={3000} factor={4} fade speed={0.5} />
 
-      <Earth
-        currentPoint={currentPoint}
-        simulatedTime={simulatedTime}
-      />
-      <GroundTrack orbitData={orbitData} />
-      <Satellite
-        orbitData={orbitData}
-        currentIndex={currentIndex}
-        satPosRef={satPosRef}
-        onToggleFocus={() => setIsFocusedOnSatellite(prev => !prev)}
-      />
+      {/* Main rotating reference frame (ECEF - Earth Centered Earth Fixed) */}
+      <group ref={rotatingGroupRef}>
+        <Earth />
+        <GroundTrack orbitData={orbitData} />
+        <Satellite
+          orbitData={orbitData}
+          currentIndex={currentIndex}
+          satPosRef={satPosRef}
+          onToggleFocus={() => setIsFocusedOnSatellite(prev => !prev)}
+        />
+      </group>
 
       <OrbitControls
         ref={controlsRef}
