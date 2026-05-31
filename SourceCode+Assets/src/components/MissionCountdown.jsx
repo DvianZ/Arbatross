@@ -113,28 +113,6 @@ export default function MissionCountdown() {
           </div>
         </div>
 
-        {/* Individual digit groups */}
-        <div className="countdown__digits">
-          <div className="countdown__digit-group">
-            <div className="countdown__digit-value">{String(countdown.days).padStart(3, '0')}</div>
-            <div className="countdown__digit-label">Days</div>
-          </div>
-          <div className="countdown__separator">:</div>
-          <div className="countdown__digit-group">
-            <div className="countdown__digit-value">{String(countdown.hours).padStart(2, '0')}</div>
-            <div className="countdown__digit-label">Hrs</div>
-          </div>
-          <div className="countdown__separator">:</div>
-          <div className="countdown__digit-group">
-            <div className="countdown__digit-value">{String(countdown.minutes).padStart(2, '0')}</div>
-            <div className="countdown__digit-label">Min</div>
-          </div>
-          <div className="countdown__separator">:</div>
-          <div className="countdown__digit-group">
-            <div className="countdown__digit-value">{String(countdown.seconds).padStart(2, '0')}</div>
-            <div className="countdown__digit-label">Sec</div>
-          </div>
-        </div>
 
         <div className="countdown__date">
           {formattedDate} — {formattedTime}
