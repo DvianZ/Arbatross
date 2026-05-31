@@ -114,9 +114,7 @@ export default function MissionCountdown() {
         </div>
 
 
-        <div className="countdown__date">
-          {formattedDate} — {formattedTime}
-        </div>
+
       </div>
     </div>
   );
