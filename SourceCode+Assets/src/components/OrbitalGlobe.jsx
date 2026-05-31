@@ -18,14 +18,14 @@ if (typeof window !== 'undefined') {
 }
 
 /* ─── Coordinate Helper ─── */
-// Convert lat/lon to 3D position (aligned to Three.js coordinate system and page.js)
+// Convert lat/lon to 3D position (aligned to Three.js right-handed coordinate system)
 function latLonToPos(lat, lon, radius = 2.15) {
   const phi = (90 - lat) * (Math.PI / 180);
   const theta = lon * (Math.PI / 180);
   return new THREE.Vector3(
     radius * Math.sin(phi) * Math.cos(theta),
     radius * Math.cos(phi),
-    radius * Math.sin(phi) * Math.sin(theta)
+    -radius * Math.sin(phi) * Math.sin(theta) // Inverted Z to ensure counter-clockwise (Eastward) orbit
   );
 }
 
